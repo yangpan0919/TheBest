@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>getmessage</title>
+</head>
+<body>
+
+<h1>欢迎光临！！！！！！！！！</h1>
+<form action="insertT" method="post" enctype="multipart/form-data">
+    <p>单文件：
+        <input type="file" name="fileTest"><br/>
+    <p>多文件：
+        <input type="file" name="fileList" multiple>
+        <input type="submit" value="提交">
+</form>
+<script>
+
+    window.addEventListener('message', function(e) {
+        if (e.source != window.parent)
+            return;
+        var n = e.data.search("set@");
+        if(n == 0){
+            localStorage.setItem('"tokenWeb"',e.data.substring(4));
+        }
+//        window.parent.postMessage('finished', '*');
+    }, false);
+</script>
+</body>
+</html>

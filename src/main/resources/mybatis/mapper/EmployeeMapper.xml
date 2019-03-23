@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.best.zcdn.mapper.EmployeeMapper">
+   <!--    public Employee getEmpById(Integer id);
+
+    public void insertEmp(Employee employee);-->
+    <select id="getEmpById" resultType="com.best.zcdn.bean.Employee">
+        SELECT * FROM employee WHERE id=#{id}
+    </select>
+    <insert id="createTable">
+        CREATE TABLE IF NOT EXISTS employee1 (
+        id int(11) NOT NULL,
+        lastName varchar(255) DEFAULT NULL,
+        email varchar(255) DEFAULT NULL,
+        gender int(2) DEFAULT NULL,
+        d_id int(11) DEFAULT NULL,
+        PRIMARY KEY (id)
+        );
+    </insert>
+    <insert id="insertEmp">
+        CREATE TABLE IF NOT  EXISTS employee (
+          id int(11) NOT NULL AUTO_INCREMENT,
+          lastName varchar(255) DEFAULT NULL,
+          email varchar(255) DEFAULT NULL,
+          gender int(2) DEFAULT NULL,
+          d_id int(11) DEFAULT NULL,
+          PRIMARY KEY (`id`)
+          );
+        INSERT INTO employee(id,lastName) VALUES (#{id},#{lastName})
+    </insert>
+    <insert id="insertEmps">
+        INSERT INTO employee(lastName) VALUES
+        <foreach collection="list" index="index" item="item" separator=",">
+            (
+            #{item.lastName}
+            )
+        </foreach>
+
+    </insert>
+    
+    <resultMap id="mmp" type="com.best.zcdn.bean.Permission">
+        <result column="id" property="id"></result>
+        <result column="permission_name" property="permissionName"></result>
+        <result column="description" property="description"></result>
+        <result column="flag" property="flag"></result>
+        <collection property="list" ofType="com.best.zcdn.bean.Permission">
+            <result column="id1" property="id"></result>
+            <result column="permission_name1" property="permissionName"></result>
+            <result column="description1" property="description"></result>
+            <result column="flag1" property="flag"></result>
+            <collection property="list" ofType="com.best.zcdn.bean.Permission">
+                <result column="id2" property="id"></result>
+                <result column="permission_name2" property="permissionName"></result>
+                <result column="description2" property="description"></result>
+                <result column="flag2" property="flag"></result>
+            </collection>
+        </collection>
+    </resultMap>
+
+    <select id="getUserById" resultMap="mmp">
+        SELECT
+            a.id,
+            a.permission_name,
+            a.description,
+        a1.permission_id flag,
+            b.id id1,
+            b.permission_name permission_name1,
+            b.description description1,
+        b1.permission_id flag1,
+            c.id id2,
+            c.permission_name permission_name2,
+            c.description description2,
+        c1.permission_id flag2
+        FROM
+             permission a
+        LEFT JOIN  user_permission a1 ON a1.user_id =#{userId} AND a.ID = a1.permission_id
+        LEFT JOIN  permission  b ON a.id = b.parent_id AND b.DEL_FLAG = 1
+        LEFT JOIN  user_permission b1 ON b1.user_id =#{userId} AND b.ID = b1.permission_id
+        LEFT JOIN  permission  c ON b.id = c.parent_id AND c.DEL_FLAG = 1
+        LEFT JOIN  user_permission c1 ON c1.user_id =#{userId} AND c.ID = c1.permission_id
+        WHERE
+            a.parent_id = -1 AND a.DEL_FLAG = 1
+    </select>
+
+
+</mapper>
